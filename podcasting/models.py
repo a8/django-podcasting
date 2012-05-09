@@ -19,6 +19,7 @@ except:
     ImageSpec = None
 
 from licenses.fields import LicenseField
+from licenses.models import License
 
 if "taggit" in settings.INSTALLED_APPS:
     from taggit.managers import TaggableManager
@@ -35,6 +36,26 @@ from podcasting.utils.db import manager_from
 from podcasting.utils.fields import AutoSlugField, UUIDField
 from podcasting.utils.twitter import can_tweet
 
+# South introspection rules
+from south.modelsinspector import add_introspection_rules
+
+licence_introspection_rule = (
+    (LicenseField,),
+    [],
+        {
+        'to': ['rel.to', {'default': License}],
+        #'to': ('rel.to',  {'default': 'licenses.License'}),
+        #"to_field": ["rel.field_name", {"default_attr": "rel.to._meta.pk.name"}],
+        #'required': ['required', {'default': False}],
+        #'null': ['null', {'default': False}],
+        #'blank': ['blank', {'default': False}],
+        #'related_name': ['rel.related_name', {"default": "Hallo"}],
+        #"db_index": ["db_index", {"default": True}],
+        },
+    )
+
+add_introspection_rules(
+    [licence_introspection_rule], ["^licenses\.fields\.LicenseField"])
 
 def get_show_upload_folder(instance, pathname):
     "A standardized pathname for uploaded files and images."
