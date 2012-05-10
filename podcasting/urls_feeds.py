@@ -9,6 +9,8 @@ urlpatterns = patterns("",
     # Episode list feed by show (Atom)
     url(r"^(?P<show_slug>[-\w]+)/itunes/(?P<mime_type>[-\w]+)/atom/$",
         AtomShowFeed(), name="podcasts_show_feed_atom"),
+    url(r"^(?P<show_slug>[-\w]+)/bitlove/(?P<mime_type>[-\w]+)/atom/$",
+        AtomShowFeed(), name="podcasts_show_feed_bitlove"),
     # Episode list feed by show (Media RSS)
     # TODO upon request
 )
