@@ -57,6 +57,25 @@ class Show(models.Model):
         (2, _("no")),
         (3, _("clean")),
     )
+    CATEGORY_CHOICES = (
+        # http://www.apple.com/itunes/podcasts/specs.html#categories
+        ('Arts', 'Arts'),
+        ('Business', 'Business'),
+        ('Comedy', 'Comedy'),
+        ('Education', 'Education'),
+        ('Games & Hobbies', 'Games &amp; Hobbies'),
+        ('Government & Organizations', 'Government &amp; Organizations'),
+        ('Health', 'Health'),
+        ('Kids & Family', 'Kids &amp; Family'),
+        ('Music', 'Music'),
+        ('News & Politics', 'News &amp; Politics'),
+        ('Religion & Spirituality', 'Religion &amp; Spirituality'),
+        ('Science & Medicine', 'Science &amp; Medicine'),
+        ('Society & Culture', 'Society &amp; Culture'),
+        ('Sports & Recreation', 'Sports &amp; Recreation'),
+        ('Technology', 'Technology'),
+        ('TV & Film', 'TV &amp; Film'),
+    )
     uuid = UUIDField(_("id"), unique=True)
 
     created = models.DateTimeField(_("created"), default=datetime.now, editable=False)
@@ -137,6 +156,9 @@ class Show(models.Model):
         for more. <a href="http://www.feedburner.com/fb/a/ping">Manually ping</a>"""))
 
     # iTunes specific fields
+    category = models.CharField(_("Category"), choices=CATEGORY_CHOICES,
+                                max_length=30, blank=False,
+                                help_text="The mayor category of this show.")
     explicit = models.PositiveSmallIntegerField(_("explicit"), default=1, choices=EXPLICIT_CHOICES,
         help_text=_("``Clean`` will put the clean iTunes graphic by it."))
     redirect = models.URLField(_("redirect"), blank=True,
