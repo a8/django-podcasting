@@ -95,7 +95,7 @@ class ShowFeed(Feed):
         return show.link
 
     def categories(self, show):
-        return ("Music",)
+        return show.main_category,
 
     def feed_copyright(self, show):
         return "{0} {1} {2}".format(show.license.name, show.license.url, datetime.date.today().year)
