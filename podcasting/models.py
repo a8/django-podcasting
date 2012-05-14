@@ -158,7 +158,7 @@ class Show(models.Model):
         for more. <a href="http://www.feedburner.com/fb/a/ping">Manually ping</a>"""))
 
     # iTunes specific fields
-    category = models.CharField(_("Category"), choices=CATEGORY_CHOICES,
+    main_category= models.CharField(_("Category"), choices=CATEGORY_CHOICES,
                                 max_length=30, blank=False,
                                 help_text="The mayor category of this show.")
     explicit = models.PositiveSmallIntegerField(_("explicit"), default=1, choices=EXPLICIT_CHOICES,
