@@ -341,6 +341,8 @@ class Enclosure(models.Model):
     """
     MIME_CHOICES = (
         ("mp3", "audio/mpeg"),
+        ("m4a", "audio/mpeg"),
+        ("oga", "audio/ogg"),
     )
 
     episode = models.ForeignKey(Episode)
