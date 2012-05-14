@@ -1,5 +1,6 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
+from django.conf import settings
 
 from milkman.dairy import milkman
 
