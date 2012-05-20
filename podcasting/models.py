@@ -48,6 +48,61 @@ def get_episode_upload_folder(instance, pathname):
     return "img/podcasts/{0}/episodes/{1}{2}".format(instance.show.slug, slugify(root), ext)
 
 
+class MainCategory(models.Model):
+    """
+    A main category of a podcast Show().
+    It's the root category and can have one or more sub categories.
+    """
+    name = models.CharField(
+        _("Name"), max_length=255,
+        help_text=_("Name of the main category,"),
+        unique=True,
+        blank=False,
+        )
+
+    class Meta:
+        verbose_name = _("Main Category")
+        verbose_name_plural = _("Main Categories")
+
+    def __unicode__(self):
+        return u"%s" % (self.name,)
+
+
+class SubCategory(models.Model):
+    """
+    A sub category that has to have a MainCategory()
+    """
+    name = models.CharField(
+        _("Name"), max_length=255,
+        help_text=_("Name of the sub category,"),
+        blank=False,
+        )
+
+    main_category = models.ForeignKey(
+        MainCategory,
+        verbose_name=(_("main category")),
+        help_text=_("Name of the main category,"),
+        blank=False,
+    )
+
+#    sub_category_of = models.ForeignKey(
+#        'self',
+#        verbose_name=(_("sub category of")),
+#        help_text=_("This subcategory is a further sub category of this "
+#                    "category. iTunes accepts a list of up to 3 sub categories."
+#                    "But, it shows only the first one in most cases. See"
+#                    "http://www.apple.com/itunes/podcasts/specs.html#categories"
+#                    "for details."),
+#        )
+
+    class Meta:
+        unique_together = ("name", "main_category")
+        verbose_name_plural = _("Sub Categories")
+
+    def __unicode__(self):
+        return u"%s - %s" % (self.main_category.name, self.name)
+
+
 class Show(models.Model):
     """
     A podcast show, which has many episodes.
@@ -97,6 +152,22 @@ class Show(models.Model):
         help_text="Email address of the person responsible for channel publishing.")
 
     license = LicenseField()
+
+    main_category = models.ForeignKey(
+        MainCategory,
+        verbose_name=(_("main category")),
+        help_text=_("Select or create a main category, That is required by "
+                    "podcast directories such as iTunes."),
+        blank=False,
+    )
+
+    # FIXME (a8): That has to be limited to the MainCategory()
+    sub_categories = models.ManyToManyField(
+        SubCategory,
+        verbose_name=(_("sub categories")),
+        help_text=_("Select or create sub categories. E. g. iTunes limits that"
+                    "to max. 3 sub categories."),
+        )
 
     organization = models.CharField(_("organization"), max_length=255,
         help_text=_("Name of the organization, company or Web site producing the podcast."))
