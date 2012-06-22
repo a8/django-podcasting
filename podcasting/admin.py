@@ -5,7 +5,7 @@ from django.contrib import admin
 from imagekit.admin import AdminThumbnail
 
 from podcasting.forms import AdminShowForm, AdminEpisodeForm
-from podcasting.models import Show, Episode, Enclosure
+from podcasting.models import Show, Episode, Enclosure, MainCategory, SubCategory
 from podcasting.utils.twitter import can_tweet
 
 
@@ -27,6 +27,10 @@ class ShowAdmin(admin.ModelAdmin):
     def show_site(self, obj):
         return obj.site.name
     show_site.short_description = "Site"
+
+    def get_form(self, request, obj=None, **kwargs):
+        self.instance = obj # Capture instance before the form gets generated
+        return super(ShowAdmin, self).get_form(request, obj=obj, **kwargs)
 
 
 class EpisodeAdmin(admin.ModelAdmin):
@@ -62,3 +66,6 @@ class EnclosureAdmin(admin.ModelAdmin):
 admin.site.register(Show, ShowAdmin)
 admin.site.register(Episode, EpisodeAdmin)
 admin.site.register(Enclosure, EnclosureAdmin)
+admin.site.register(MainCategory)
+admin.site.register(SubCategory)
+
