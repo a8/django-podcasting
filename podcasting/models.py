@@ -85,16 +85,6 @@ class SubCategory(models.Model):
         blank=False,
     )
 
-#    sub_category_of = models.ForeignKey(
-#        'self',
-#        verbose_name=(_("sub category of")),
-#        help_text=_("This subcategory is a further sub category of this "
-#                    "category. iTunes accepts a list of up to 3 sub categories."
-#                    "But, it shows only the first one in most cases. See"
-#                    "http://www.apple.com/itunes/podcasts/specs.html#categories"
-#                    "for details."),
-#        )
-
     class Meta:
         unique_together = ("name", "main_category")
         verbose_name_plural = _("Sub Categories")
@@ -159,18 +149,23 @@ class Show(models.Model):
         help_text=_("Select or create a main category, That is required by "
                     "podcast directories such as iTunes."),
         blank=False,
+        default=False,
     )
-
-    # FIXME (a8): That has to be limited to the MainCategory()
     sub_categories = models.ManyToManyField(
         SubCategory,
         verbose_name=(_("sub categories")),
         help_text=_("Select or create sub categories. E. g. iTunes limits that"
-                    "to max. 3 sub categories."),
+                    "to max. 3 sub categories."
+                    "But, it shows only the first one in most cases. See"
+                    "http://www.apple.com/itunes/podcasts/specs.html#categories"
+                    "for details."),
+        default=False,
+        blank=True,
         )
 
     organization = models.CharField(_("organization"), max_length=255,
         help_text=_("Name of the organization, company or Web site producing the podcast."))
+
     link = models.URLField(_("link"), help_text=_("""URL of either the main website or the
         podcast section of the main website."""))
 
@@ -227,9 +222,6 @@ class Show(models.Model):
         for more. <a href="http://www.feedburner.com/fb/a/ping">Manually ping</a>"""))
 
     # iTunes specific fields
-    main_category= models.CharField(_("Category"), choices=CATEGORY_CHOICES,
-                                max_length=30, blank=False,
-                                help_text="The mayor category of this show.")
     explicit = models.PositiveSmallIntegerField(_("explicit"), default=1, choices=EXPLICIT_CHOICES,
         help_text=_("``Clean`` will put the clean iTunes graphic by it."))
     redirect = models.URLField(_("redirect"), blank=True,
