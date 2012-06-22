@@ -20,4 +20,6 @@ SITE_ID = 1
 
 ROOT_URLCONF = "podcasting.tests.urls"
 
+ADMIN_MEDIA_PREFIX = '/static/admin/'
+
 TEST_RUNNER = "django_nose.NoseTestSuiteRunner"

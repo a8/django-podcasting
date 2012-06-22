@@ -18,6 +18,7 @@ from milkman.dairy import milkman
 from podcasting.models import Show, Episode, Enclosure, MainCategory, SubCategory
 
 class ShowTests(TestCase):
+    fixtures = ["itunes_categories.json"]
 
     def setUp(self):
         self.main_category = milkman.deliver(MainCategory)
