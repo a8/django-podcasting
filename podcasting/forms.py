@@ -13,7 +13,7 @@ except ImportError:
 
 from podcasting.utils.twitter import can_tweet
 from podcasting.utils.widgets import CustomAdminThumbnailWidget
-from podcasting.models import Enclosure, Episode, Show
+from podcasting.models import Enclosure, Episode, Show, SubCategory
 
 
 class BaseShowForm(forms.ModelForm):
@@ -179,6 +179,9 @@ class AdminShowForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(AdminShowForm, self).__init__(*args, **kwargs)
         self.fields["publish"].initial = bool(self.instance.published)
+        # FIXME (a8), without that it triggered a bug while adding a Show
+        # in the admin (selected_choices was False)
+        self.fields["sub_categories"].initial = SubCategory.objects.all()
 
     def clean_publish(self):
         # clean_publish is called twice, skip the first time when instance is unset
