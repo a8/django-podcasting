@@ -16,16 +16,19 @@ from django.conf import settings
 
 from milkman.dairy import milkman
 
-from podcasting.models import Show, Episode, Enclosure
+from podcasting.models import Show, Episode, Enclosure, MainCategory
 
 
 class AtomFeedTests(TestCase):
+
+    fixtures = ["itunes_categories.json"]
+
     def setUp(self):
         settings.ROOT_URLCONF = 'podcasting.tests.urls'
         self.show = milkman.deliver(
             Show, title="snowprayers",
             tags="tag1, tag2",
-            main_category="Technology",
+            main_category=MainCategory.objects.get(name="Technology"),
             original_image="media/show.png",
             published=datetime.now(),
             )
@@ -46,6 +49,20 @@ class AtomFeedTests(TestCase):
             mime="mp3",
         )
         self.enclosure_mp3.save()
+        self.enclosure_ogg = milkman.deliver(
+            Enclosure,
+            episode=self.episode,
+            url="http://django-podcasting.org/podcasting/show/episode/media.ogg",
+            mime="oga",
+            )
+        self.enclosure_ogg.save()
+        self.enclosure_m4a = milkman.deliver(
+            Enclosure,
+            episode=self.episode,
+            url="http://django-podcasting.org/podcasting/show/episode/media.m4a",
+            mime="m4a",
+            )
+        self.enclosure_m4a.save()
 
     def test_enclosure_mp3(self):
         """Check for the one mp3 enclosure"""
@@ -88,4 +105,5 @@ class AtomFeedTests(TestCase):
             self.assertFalse(t.hasChildNodes())
             self.assertEqual(1, len(t.attributes.keys()))
             self.assertTrue('text' in t.attributes.keys())
-            self.assertEqual(self.show.main_category, t.getAttribute('text'))
+            self.assertEqual(self.show.main_category.name, t.getAttribute('text'))
+
