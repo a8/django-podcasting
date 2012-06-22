@@ -102,25 +102,6 @@ class Show(models.Model):
         (2, _("no")),
         (3, _("clean")),
     )
-    CATEGORY_CHOICES = (
-        # http://www.apple.com/itunes/podcasts/specs.html#categories
-        ('Arts', 'Arts'),
-        ('Business', 'Business'),
-        ('Comedy', 'Comedy'),
-        ('Education', 'Education'),
-        ('Games & Hobbies', 'Games &amp; Hobbies'),
-        ('Government & Organizations', 'Government &amp; Organizations'),
-        ('Health', 'Health'),
-        ('Kids & Family', 'Kids &amp; Family'),
-        ('Music', 'Music'),
-        ('News & Politics', 'News &amp; Politics'),
-        ('Religion & Spirituality', 'Religion &amp; Spirituality'),
-        ('Science & Medicine', 'Science &amp; Medicine'),
-        ('Society & Culture', 'Society &amp; Culture'),
-        ('Sports & Recreation', 'Sports &amp; Recreation'),
-        ('Technology', 'Technology'),
-        ('TV & Film', 'TV &amp; Film'),
-    )
     uuid = UUIDField(_("id"), unique=True)
 
     created = models.DateTimeField(_("created"), default=datetime.now, editable=False)
