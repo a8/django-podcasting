@@ -24,8 +24,7 @@ __license__ = "Python"
 
 import os
 import sys
-from podcasting.models import MainCategory, SubCategory
-from django.core.management import setup_environ
+from podcasting.models import Category
 
 CATEGORIES = {
     "Arts": ["Design", "Fashion & Beauty", "Food", "Literature", "Performing Arts", "Visual Arts"],
@@ -49,25 +48,25 @@ CATEGORIES = {
 def load_categories():
     """load the categories into the database"""
     for main_category_name in CATEGORIES.keys():
-        main_category = MainCategory(name=main_category_name)
+        main_category = Category(name=main_category_name)
         main_category.save()
+        print main_category
 
         for sub_category_name in CATEGORIES[main_category_name]:
-            sub_category = SubCategory(name=sub_category_name,
-                                       main_category=main_category)
+            sub_category = Category(name=sub_category_name,
+                                    sub_category_of=main_category)
             sub_category.save()
 
 def main():
-    if MainCategory.objects.all():
-        raise Exception("Found existing main categories.")
+    if Category.objects.all():
+        raise Exception("Found existing categories.")
     load_categories()
 
 
 if __name__ == '__main__':
     if not os.environ.has_key("DJANGO_SETTINGS_MODULE"):
-        print ("You need to provide the environment variable "
+        raise EnvironmentError("You need to provide the environment variable "
                "DJANGO_SETTINGS_MODULE!")
-        sys.exit(1)
     main()
 
 # vim: tabstop=4 expandtab shiftwidth=4 softtabstop=4 fileencoding=utf-8 :

@@ -5,7 +5,7 @@ from django.contrib import admin
 from imagekit.admin import AdminThumbnail
 
 from podcasting.forms import AdminShowForm, AdminEpisodeForm
-from podcasting.models import Show, Episode, Enclosure, MainCategory, SubCategory
+from podcasting.models import Show, Episode, Enclosure, Category
 from podcasting.utils.twitter import can_tweet
 
 
@@ -15,6 +15,7 @@ class ShowAdmin(admin.ModelAdmin):
     list_display = ("title", "slug", "show_site", "published_flag", "admin_thumbnail")
     list_filter = ("title", "published", "site")
     admin_thumbnail = AdminThumbnail(image_field="admin_thumb_sm")
+    filter_horizontal = ["category",]
 
     if can_tweet():
         fields.append("tweet_text")
@@ -66,6 +67,5 @@ class EnclosureAdmin(admin.ModelAdmin):
 admin.site.register(Show, ShowAdmin)
 admin.site.register(Episode, EpisodeAdmin)
 admin.site.register(Enclosure, EnclosureAdmin)
-admin.site.register(MainCategory)
-admin.site.register(SubCategory)
+admin.site.register(Category)
 

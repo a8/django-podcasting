@@ -48,49 +48,49 @@ def get_episode_upload_folder(instance, pathname):
     return "img/podcasts/{0}/episodes/{1}{2}".format(instance.show.slug, slugify(root), ext)
 
 
-class MainCategory(models.Model):
+class Category(models.Model):
     """
-    A main category of a podcast Show().
-    It's the root category and can have one or more sub categories.
-    """
-    name = models.CharField(
-        _("Name"), max_length=255,
-        help_text=_("Name of the main category,"),
-        unique=True,
-        blank=False,
-        )
+    A category of a podcast Show()
 
-    class Meta:
-        verbose_name = _("Main Category")
-        verbose_name_plural = _("Main Categories")
-
-    def __unicode__(self):
-        return u"%s" % (self.name,)
-
-
-class SubCategory(models.Model):
-    """
-    A sub category that has to have a MainCategory()
+    Categories can have sub categories. The name pair of the category and
+    it's sub category has to be unique.
     """
     name = models.CharField(
         _("Name"), max_length=255,
-        help_text=_("Name of the sub category,"),
+        help_text=_("category name"),
         blank=False,
         )
 
-    main_category = models.ForeignKey(
-        MainCategory,
-        verbose_name=(_("main category")),
-        help_text=_("Name of the main category,"),
-        blank=False,
-    )
+    sub_category_of = models.ForeignKey(
+        'self',
+        verbose_name=(_("sub category")),
+        help_text=_("This sub category is a further category of this "
+                    "category. iTunes accepts a list of up to 3 category / sub"
+                    "categories pairs."
+                    "But, it shows only the first one in most cases. See"
+                    "http://www.apple.com/itunes/podcasts/specs.html#categories"
+                    "for details."),
+        default=False,
+        null=True,
+        blank=True,
+        related_name='sub_category',
+        # FIXME (a8): prevent circular references, enforce hierarchy, maybe
+        # using limit_choices_to
+        )
 
     class Meta:
-        unique_together = ("name", "main_category")
-        verbose_name_plural = _("Sub Categories")
+        unique_together = ("name", "sub_category_of")
+        verbose_name_plural = _("Categories")
 
     def __unicode__(self):
-        return u"%s - %s" % (self.main_category.name, self.name)
+        try:
+            if self.sub_category_of:
+                name = u"(%s) - %s" % (self.sub_category_of.name, self.name)
+            else:
+                name = u"%s" % (self.name,)
+        except self.DoesNotExist:
+            name = u"%s" % (self.name,)
+        return name
 
 
 class Show(models.Model):
@@ -124,25 +124,19 @@ class Show(models.Model):
 
     license = LicenseField()
 
-    main_category = models.ForeignKey(
-        MainCategory,
-        verbose_name=(_("main category")),
-        help_text=_("Select or create a main category, That is required by "
-                    "podcast directories such as iTunes."),
+    category = models.ManyToManyField(
+        Category,
+        verbose_name=(_("category")),
+        help_text=_("Select or create at least one category, That is required by "
+                    "podcast directories such as iTunes. E. g. iTunes limits"
+                    "that to max. 3 sub categories."
+                    "But, it shows only the first one in most cases. See"
+                    "http://www.apple.com/itunes/podcasts/specs.html#categories"
+                    "for details."
+        ),
         blank=False,
         default=False,
     )
-    sub_categories = models.ManyToManyField(
-        SubCategory,
-        verbose_name=(_("sub categories")),
-        help_text=_("Select or create sub categories. E. g. iTunes limits that"
-                    "to max. 3 sub categories."
-                    "But, it shows only the first one in most cases. See"
-                    "http://www.apple.com/itunes/podcasts/specs.html#categories"
-                    "for details."),
-        default=False,
-        blank=True,
-        )
 
     organization = models.CharField(_("organization"), max_length=255,
         help_text=_("Name of the organization, company or Web site producing the podcast."))
