@@ -61,7 +61,7 @@ class Category(models.Model):
         blank=False,
         )
 
-    sub_category_of = models.ForeignKey(
+    parent = models.ForeignKey(
         'self',
         verbose_name=(_("sub category")),
         help_text=_("This sub category is a further category of this "
@@ -73,19 +73,17 @@ class Category(models.Model):
         default=False,
         null=True,
         blank=True,
-        related_name='sub_category',
-        # FIXME (a8): prevent circular references, enforce hierarchy, maybe
-        # using limit_choices_to
+        related_name='parent',
         )
 
     class Meta:
-        unique_together = ("name", "sub_category_of")
+        unique_together = ("name", "parent")
         verbose_name_plural = _("Categories")
 
     def __unicode__(self):
         try:
-            if self.sub_category_of:
-                name = u"(%s) - %s" % (self.sub_category_of.name, self.name)
+            if self.parent:
+                name = u"(%s) - %s" % (self.parent.name, self.name)
             else:
                 name = u"%s" % (self.name,)
         except self.DoesNotExist:
